@@ -115,7 +115,7 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState('English');
   const [isYearOpen, setIsYearOpen] = useState(false);
-  const [currentYear, setCurrentYear] = useState('AY 2025–26');
+  const [currentYear, setCurrentYear] = useState('AY 2026–27');
 
   // Theme Management
   const [isDark, setIsDark] = useState(false);
@@ -633,9 +633,10 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
               </button>
 
               {isYearOpen && (
-                <div className="absolute right-0 mt-1.5 w-[140px] surface-raised shadow-xl z-50 overflow-hidden animate-scale-in p-1 text-[11.5px]">
+                <div className="absolute right-0 mt-1.5 w-[160px] surface-raised shadow-xl z-50 overflow-hidden animate-scale-in p-1 text-[11.5px]">
                   {[
-                    { val: 'AY 2025–26', label: 'AY 2025–26 (Active)' },
+                    { val: 'AY 2026–27', label: 'AY 2026–27 (Current)' },
+                    { val: 'AY 2025–26', label: 'AY 2025–26' },
                     { val: 'AY 2024–25', label: 'AY 2024–25' }
                   ].map(y => (
                     <button
@@ -647,7 +648,7 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
                       }}
                       className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-[var(--primary-subtle)] text-left text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
                     >
-                      <span>{y.val}</span>
+                      <span>{y.label}</span>
                       {currentYear === y.val && <Check className="h-3 w-3 text-[var(--primary)]" />}
                     </button>
                   ))}
@@ -872,6 +873,7 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
                   }}
                   className="w-full text-[11px] font-bold border border-[var(--border)] rounded-md bg-[var(--surface)] p-1 text-[var(--foreground-muted)] outline-none"
                 >
+                  <option value="AY 2026–27">AY 2026–27 (Current)</option>
                   <option value="AY 2025–26">AY 2025–26</option>
                   <option value="AY 2024–25">AY 2024–25</option>
                 </select>

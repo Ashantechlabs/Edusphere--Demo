@@ -672,3 +672,19 @@ body::before {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Custom fine-line scrollbar for briefings list */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground-muted);
+}
+

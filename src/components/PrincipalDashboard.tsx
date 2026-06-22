@@ -45,6 +45,11 @@ export default function PrincipalDashboard() {
 
   const { toast } = useToast();
 
+  const [mounted, setMounted] = useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
 
 
   const totalDue = students.reduce((a, s) => a + (s.feeStatus === 'Pending' ? s.feeDue : 0), 0);
@@ -156,7 +161,7 @@ export default function PrincipalDashboard() {
     }
   ];
 
-  const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const todayVal = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -164,7 +169,9 @@ export default function PrincipalDashboard() {
       {/* ── Executive Greeting Header ─────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[var(--border)]">
         <div>
-          <p className="text-[10px] font-bold tracking-wider uppercase text-[var(--foreground-muted)] mb-1">{today}</p>
+          <p suppressHydrationWarning className="text-[10px] font-bold tracking-wider uppercase text-[var(--foreground-muted)] mb-1">
+            {mounted ? todayVal : ''}
+          </p>
           <h1 className="text-[1.8rem] font-extrabold tracking-tight text-[var(--foreground)] leading-none">
             Good Morning
           </h1>
@@ -201,8 +208,14 @@ export default function PrincipalDashboard() {
 
       {/* ── Today's School Snapshot Briefing (No Cards) ─── */}
       <div className="premium-card p-4.5 bg-gradient-to-r from-[var(--surface)] to-[var(--secondary)]">
-        <h2 className="text-[11px] font-bold uppercase tracking-wider text-[var(--foreground-muted)] mb-3">{"Today's School Snapshot"}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-[var(--foreground-muted)] mb-3">
+          {"Today's School Snapshot · Academic Year 2026-2027"}
+        </h2>
+        <div 
+          className={`grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 ${
+            8 > 6 ? 'max-h-[105px] overflow-y-auto pr-2 custom-scrollbar' : ''
+          }`}
+        >
           <div className="briefing-row">
             <CheckCircle2 className="h-4.5 w-4.5 briefing-icon-ok" />
             <span className="text-[13px] font-medium text-[var(--foreground)]">Attendance target achieved in 4 classes (10-A, 10-B, 9-A, 9-B)</span>
@@ -226,6 +239,14 @@ export default function PrincipalDashboard() {
           <div className="briefing-row">
             <CheckCircle2 className="h-4.5 w-4.5 briefing-icon-ok" />
             <span className="text-[13px] font-medium text-[var(--foreground)]">Fee collection reached {feeRate}% (Outstanding: ₹{(totalDue / 100000).toFixed(1)}L)</span>
+          </div>
+          <div className="briefing-row">
+            <CheckCircle2 className="h-4.5 w-4.5 briefing-icon-ok" />
+            <span className="text-[13px] font-medium text-[var(--foreground)]">Term 1 examination schedules published (Theory assessments commence July 6th)</span>
+          </div>
+          <div className="briefing-row">
+            <AlertTriangle className="h-4.5 w-4.5 briefing-icon-alert" />
+            <span className="text-[13px] font-medium text-[var(--foreground)]">Weather advisory: Heavy rains forecast tomorrow, remote learning buffers active</span>
           </div>
         </div>
       </div>

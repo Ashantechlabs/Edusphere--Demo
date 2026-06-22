@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSchoolStore } from '@/store/useSchoolStore';
 import { useToast } from '@/components/ui/Toast';
 import { Dialog } from '@/components/ui/Dialog';
@@ -47,8 +47,14 @@ export default function TeacherDashboard({ activeTab }: TeacherDashboardProps) {
 
   // ── Attendance Module ────────────────────────────────────
   const [attClass, setAttClass] = useState('10-A');
-  const [attDate, setAttDate] = useState(new Date().toISOString().split('T')[0]);
+  const [attDate, setAttDate] = useState('');
   const [attRecords, setAttRecords] = useState<Record<string, 'Present' | 'Absent' | 'Late'>>({});
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    setAttDate(new Date().toISOString().split('T')[0]);
+  }, []);
 
   const attStudents = React.useMemo(() => students.filter(s => s.classId === attClass), [students, attClass]);
 
@@ -135,8 +141,8 @@ export default function TeacherDashboard({ activeTab }: TeacherDashboardProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="border-b border-[var(--border)] pb-3">
-        <p className="text-[10px] font-bold tracking-wider uppercase text-[var(--foreground-muted)] mb-1">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+        <p suppressHydrationWarning className="text-[10px] font-bold tracking-wider uppercase text-[var(--foreground-muted)] mb-1">
+          {mounted ? new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }) : ''}
         </p>
         <h1 className="text-[1.5rem] font-extrabold tracking-tight text-[var(--foreground)] leading-none">Educator Workspace</h1>
         <p className="text-[12px] text-[var(--foreground-muted)] mt-1.5 font-semibold">Dr. Amit Sharma · Math Dept · Rotations: {teacherClasses.join(', ')}</p>

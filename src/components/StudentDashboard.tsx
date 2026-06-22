@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSchoolStore } from '@/store/useSchoolStore';
 import { useToast } from '@/components/ui/Toast';
 import {
@@ -18,6 +18,15 @@ interface StudentDashboardProps { activeTab: string; }
 export default function StudentDashboard({ activeTab }: StudentDashboardProps) {
   const { students, homework, selectedStudentId, submitAssignment } = useSchoolStore();
   const { toast } = useToast();
+
+  const [mounted, setMounted] = useState(false);
+  const [currentTime, setCurrentTime] = useState({ hour: 0, minute: 0 });
+
+  useEffect(() => {
+    setMounted(true);
+    const now = new Date();
+    setCurrentTime({ hour: now.getHours(), minute: now.getMinutes() });
+  }, []);
 
   const student = students.find(s => s.id === selectedStudentId) || students[0];
   const studentAssignments = student.assignments || [];
@@ -74,8 +83,8 @@ export default function StudentDashboard({ activeTab }: StudentDashboardProps) {
     { time: '14:30', subject: 'Physical Education', teacher: 'Mr. Arjun Singh', room: 'Ground' },
   ];
 
-  const currentHour = new Date().getHours();
-  const currentMinute = new Date().getMinutes();
+  const currentHour = currentTime.hour;
+  const currentMinute = currentTime.minute;
 
   const handleSubmitAssignment = (assignmentId: string, title: string) => {
     submitAssignment(student.id, assignmentId);
@@ -91,8 +100,8 @@ export default function StudentDashboard({ activeTab }: StudentDashboardProps) {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[var(--border)]">
             <div>
-              <p className="text-[10px] font-bold tracking-wider uppercase text-[var(--foreground-muted)] mb-1">
-                {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+              <p suppressHydrationWarning className="text-[10px] font-bold tracking-wider uppercase text-[var(--foreground-muted)] mb-1">
+                {mounted ? new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }) : ''}
               </p>
               <h1 className="text-[1.5rem] font-extrabold tracking-tight text-[var(--foreground)] leading-none">
                 Welcome back, {student.name.split(' ')[0]}
