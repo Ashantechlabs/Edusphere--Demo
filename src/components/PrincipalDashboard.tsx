@@ -516,6 +516,7 @@ export default function PrincipalDashboard() {
         onClose={() => setIsAnnOpen(false)}
         title="Broadcast Notice Circular"
         description="Publish urgent notices, school circulars, or academic alerts to all stakeholder portals."
+        compact={true}
         footer={
           <div className="flex justify-end gap-1.5 text-[12px]">
             <button className="btn btn-ghost" onClick={() => setIsAnnOpen(false)}>Cancel</button>
@@ -568,6 +569,7 @@ export default function PrincipalDashboard() {
         onClose={() => setIsPtmOpen(false)}
         title="Schedule Parent-Teacher Meeting"
         description="Book individual or class-wide bulk PTM slots. Meeting confirmation notifications sync instantly."
+        compact={true}
         footer={
           <div className="flex justify-end gap-1.5 text-[12px]">
             <button className="btn btn-ghost" onClick={() => setIsPtmOpen(false)}>Cancel</button>
@@ -638,40 +640,41 @@ export default function PrincipalDashboard() {
             </div>
           </div>
 
-          <div>
-            <label className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-wider block mb-1">Platform / Room</label>
-            <input type="text" placeholder="Google Meet / Classroom 301" className="form-input font-medium" value={ptmForm.platform} onChange={e => setPtmForm({ ...ptmForm, platform: e.target.value })} />
-          </div>
-
-          <div>
-            <label className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-wider block mb-1">Agenda Notes</label>
-            <textarea rows={2} placeholder="Olympiad criteria, academic support, coordination notes..." className="form-input resize-none" value={ptmForm.notes} onChange={e => setPtmForm({ ...ptmForm, notes: e.target.value })} />
+          <div className="grid grid-cols-2 gap-2.5">
+            <div>
+              <label className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-wider block mb-1">Platform / Room</label>
+              <input type="text" placeholder="Google Meet / Classroom 301" className="form-input font-medium" value={ptmForm.platform} onChange={e => setPtmForm({ ...ptmForm, platform: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-wider block mb-1">Agenda Notes</label>
+              <input type="text" placeholder="Olympiad criteria, academic support..." className="form-input font-medium" value={ptmForm.notes} onChange={e => setPtmForm({ ...ptmForm, notes: e.target.value })} />
+            </div>
           </div>
         </form>
       </Dialog>
 
-      {/* Reports Audit Modal */}
       <Dialog
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="Institutional Audit Reports"
         description="Select and download verified administrative and operational compliance reports."
+        compact={true}
         footer={<button className="btn btn-ghost text-[12px]" onClick={() => setIsReportOpen(false)}>Close</button>}
       >
-        <div className="space-y-2 text-[12.5px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[12px]">
           {[
-            { title: 'Academic Performance Ledger', desc: 'Class GPA scores, syllabus benchmark rates, marks lists' },
-            { title: 'Operational Health Index', desc: 'Faculty presence rosters, student-educator ratio updates' },
-            { title: 'Financial Ledger Overview', desc: 'Term tuition receipts, digital transactions, fee outstanding lists' },
-            { title: 'Attendance Compliance Audit', desc: 'Monthly metrics logs, chronic absence alerts, action indexes' }
+            { title: 'Academic Performance Ledger', desc: 'GPA scores, marks list' },
+            { title: 'Operational Health Index', desc: 'Faculty rosters, indicators' },
+            { title: 'Financial Ledger Overview', desc: 'Invoices, collections ledger' },
+            { title: 'Attendance Compliance Audit', desc: 'Roster attendance logs' }
           ].map((r, i) => (
-            <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--primary-subtle)] transition-colors cursor-pointer group">
-              <div>
-                <p className="font-bold text-[var(--foreground)]">{r.title}</p>
-                <p className="text-[10.5px] text-[var(--foreground-muted)] mt-0.5">{r.desc}</p>
+            <div key={i} className="flex flex-col justify-between p-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--primary-subtle)] transition-colors cursor-pointer group">
+              <div className="mb-2">
+                <p className="font-bold text-[var(--foreground)] leading-tight">{r.title}</p>
+                <p className="text-[9.5px] text-[var(--foreground-muted)] mt-1">{r.desc}</p>
               </div>
               <button
-                className="btn btn-ghost text-[11px] py-1 px-2.5 flex-shrink-0 ml-3 font-bold"
+                className="btn btn-ghost text-[10px] py-1 px-2.5 font-bold w-full justify-center"
                 onClick={() => toast({ title: 'Exporting...', description: `${r.title} compilation saved to Downloads.`, variant: 'success' })}
               >
                 Export PDF

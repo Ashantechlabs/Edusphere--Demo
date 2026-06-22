@@ -16,6 +16,37 @@ import {
 
 interface ParentDashboardProps { activeTab: string; }
 
+const getPastScores = (studentId: string, subject: string, currentScore: number): number[] => {
+  if (studentId === 'S1') {
+    if (subject.startsWith('Math')) return [90, 92, 95];
+    if (subject.startsWith('Phy')) return [85, 87, 86];
+    if (subject.startsWith('Chem')) return [88, 90, 89];
+    if (subject.startsWith('Eng')) return [82, 84, 83];
+    if (subject.startsWith('World')) return [88, 89, 87];
+  } else if (studentId === 'S3') {
+    if (subject.startsWith('Math')) return [65, 62, 60];
+    if (subject.startsWith('Phy')) return [55, 50, 48];
+    if (subject.startsWith('Chem')) return [58, 56, 54];
+    if (subject.startsWith('Eng')) return [72, 70, 69];
+    if (subject.startsWith('World')) return [68, 64, 63];
+  } else if (studentId === 'S7') {
+    if (subject.startsWith('Math')) return [72, 68, 71];
+    if (subject.startsWith('Phy')) return [66, 68, 67];
+    if (subject.startsWith('Chem')) return [62, 61, 63];
+    if (subject.startsWith('Eng')) return [75, 73, 74];
+    if (subject.startsWith('World')) return [72, 71, 73];
+  }
+  const seed = studentId.charCodeAt(1) + subject.charCodeAt(0);
+  const offset1 = (seed % 6) - 3;
+  const offset2 = ((seed + 2) % 6) - 3;
+  const offset3 = ((seed + 4) % 6) - 3;
+  return [
+    Math.min(100, Math.max(40, currentScore + offset1)),
+    Math.min(100, Math.max(40, currentScore + offset2)),
+    Math.min(100, Math.max(40, currentScore + offset3))
+  ];
+};
+
 const CHILD_OPTIONS = [
   { value: 'S1', label: 'Aarav Sharma', class: '10-A', status: 'Regular', statusType: 'ok' },
   { value: 'S3', label: 'Vivaan Mehta', class: '10-A', status: 'Academic Watch', statusType: 'warn' },
@@ -427,19 +458,47 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
           {/* Subject progress list */}
           <div className="premium-card p-4.5 border border-[var(--border)] bg-[var(--surface)]">
             <h3 className="text-[13px] font-bold text-[var(--foreground)] mb-3">Subject Benchmarks</h3>
-            <div className="space-y-3.5">
-              {Object.entries(activeStudent.grades).map(([subj, score]) => (
-                <div key={subj} className="flex items-center gap-3">
-                  <span className="text-[12px] font-bold text-[var(--foreground)] w-32 truncate flex-shrink-0">{subj}</span>
-                  <div className="flex-1 progress-bar h-1.5">
-                    <div className="progress-fill" style={{ width: `${score}%`, background: (score as number) >= 85 ? 'var(--success)' : (score as number) >= 70 ? 'var(--primary)' : 'var(--warning)' }} />
-                  </div>
-                  <span className="text-[12px] font-extrabold text-[var(--foreground)] w-10 text-right">{score}%</span>
-                  <span className={`tag w-8 text-center ${(score as number) >= 90 ? 'tag-green' : (score as number) >= 75 ? 'tag-indigo' : (score as number) >= 60 ? 'tag-amber' : 'tag-red'}`}>
-                    {(score as number) >= 90 ? 'A+' : (score as number) >= 80 ? 'A' : (score as number) >= 70 ? 'B' : (score as number) >= 60 ? 'C' : 'D'}
-                  </span>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-[12px]">
+                <thead>
+                  <tr className="border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--foreground-muted)] bg-[var(--secondary)]">
+                    <th className="py-2 px-2.5">Subject</th>
+                    <th className="py-2 px-2.5 text-center">Unit Test 1</th>
+                    <th className="py-2 px-2.5 text-center">Unit Test 2</th>
+                    <th className="py-2 px-2.5 text-center">Quarterly</th>
+                    <th className="py-2 px-2.5 text-center">Current</th>
+                    <th className="py-2 px-2.5 text-center">Grade</th>
+                    <th className="py-2 px-2.5 text-right">Trend</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border-subtle)] font-medium">
+                  {Object.entries(activeStudent.grades).map(([subj, score]) => {
+                    const pastScores = getPastScores(activeStudent.id, subj, score);
+                    const pastAvg = Math.round(pastScores.reduce((a, b) => a + b, 0) / pastScores.length);
+                    const diff = score - pastAvg;
+                    const isAbove = diff >= 0;
+                    return (
+                      <tr key={subj} className="hover:bg-[var(--primary-subtle)] transition-colors">
+                        <td className="py-2.5 px-2.5 font-bold text-[var(--foreground)]">{subj}</td>
+                        <td className="py-2.5 px-2.5 text-center font-mono text-[var(--foreground-muted)]">{pastScores[0]}%</td>
+                        <td className="py-2.5 px-2.5 text-center font-mono text-[var(--foreground-muted)]">{pastScores[1]}%</td>
+                        <td className="py-2.5 px-2.5 text-center font-mono text-[var(--foreground-muted)]">{pastScores[2]}%</td>
+                        <td className="py-2.5 px-2.5 text-center font-mono font-extrabold text-[var(--foreground)] text-[13px] bg-[var(--primary-subtle)]/30">{score}%</td>
+                        <td className="py-2.5 px-2.5 text-center">
+                          <span className={`tag w-8 text-center ${score >= 90 ? 'tag-green' : score >= 80 ? 'tag-indigo' : score >= 70 ? 'tag-amber' : 'tag-red'}`}>
+                            {score >= 90 ? 'A+' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D'}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-2.5 text-right">
+                          <span className={`inline-flex items-center gap-0.5 text-[9.5px] font-bold px-1.5 py-0.5 rounded ${isAbove ? 'text-[#059669] bg-[#ecfdf5] dark:text-[#34d399] dark:bg-[#34d399]/10' : 'text-[#d97706] bg-[#fffbeb] dark:text-[#fbbf24] dark:bg-[#fbbf24]/10'}`}>
+                            {isAbove ? `↑ +${diff}%` : `↓ ${diff}%`}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
 

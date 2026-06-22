@@ -11,6 +11,7 @@ interface DialogProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  compact?: boolean;
 }
 
 export const Dialog = ({
@@ -20,7 +21,8 @@ export const Dialog = ({
   description,
   children,
   footer,
-  size = 'md'
+  size = 'md',
+  compact = false
 }: DialogProps) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -57,7 +59,7 @@ export const Dialog = ({
       
       {/* Dialog Content */}
       <div className={`relative w-full ${sizes[size]} rounded-lg border border-border bg-card text-card-foreground shadow-lg duration-200 animate-fade-in z-10 flex flex-col max-h-[90vh]`}>
-        <div className="flex flex-col space-y-1.5 p-6 border-b border-border/50">
+        <div className={`flex flex-col space-y-1 ${compact ? 'p-4 pb-3' : 'p-6'} border-b border-border/50`}>
           <button
             onClick={onClose}
             className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
@@ -66,18 +68,18 @@ export const Dialog = ({
             <span className="sr-only">Close</span>
           </button>
           
-          <h2 className="text-lg font-semibold leading-none tracking-tight">{title}</h2>
+          <h2 className="text-md font-bold leading-none tracking-tight">{title}</h2>
           {description && (
-            <p className="text-sm text-muted-foreground mt-1">{description}</p>
+            <p className="text-[11px] text-muted-foreground mt-1">{description}</p>
           )}
         </div>
         
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className={`overflow-y-auto flex-1 ${compact ? 'p-4 py-3' : 'p-6'}`}>
           {children}
         </div>
         
         {footer && (
-          <div className="flex items-center justify-end space-x-2 p-6 border-t border-border/50 bg-slate-50/50 dark:bg-slate-900/20">
+          <div className={`flex items-center justify-end space-x-2 border-t border-border/50 bg-slate-50/50 dark:bg-slate-900/20 ${compact ? 'p-3 px-4' : 'p-6'}`}>
             {footer}
           </div>
         )}
