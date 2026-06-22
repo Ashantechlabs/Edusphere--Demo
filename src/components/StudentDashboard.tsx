@@ -302,7 +302,7 @@ export default function StudentDashboard({ activeTab }: StudentDashboardProps) {
 
           {/* Overview Metric Row */}
           <div className="premium-card p-4 border border-[var(--border)] bg-[var(--surface)]">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 divide-x divide-[var(--border)]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:divide-x divide-[var(--border)]">
               {[
                 { label: 'Overall Average', value: `${overallAvg}%`, color: overallAvg >= 85 ? 'var(--success)' : 'var(--warning)' },
                 { label: 'Attendance Rate', value: `${student.attendanceRate}%`, color: student.attendanceRate >= 90 ? 'var(--success)' : 'var(--warning)' },

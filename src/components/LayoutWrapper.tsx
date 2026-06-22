@@ -580,10 +580,10 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
               <Menu className="h-4.5 w-4.5 text-[var(--foreground-muted)]" />
             </button>
             <div className="flex items-center gap-1.5 text-[12px]">
-              <span className="font-bold text-[var(--foreground-muted)]">EduSphere OS</span>
-              <ChevronRight className="h-3 w-3 text-[var(--foreground-subtle)]" />
-              <span className="font-semibold text-[var(--foreground-muted)] capitalize">{activeRole}</span>
-              <ChevronRight className="h-3 w-3 text-[var(--foreground-subtle)]" />
+              <span className="font-bold text-[var(--foreground-muted)] hidden sm:inline">EduSphere OS</span>
+              <ChevronRight className="h-3 w-3 text-[var(--foreground-subtle)] hidden sm:inline" />
+              <span className="font-semibold text-[var(--foreground-muted)] capitalize hidden md:inline">{activeRole}</span>
+              <ChevronRight className="h-3 w-3 text-[var(--foreground-subtle)] hidden md:inline" />
               <span className="font-bold text-[var(--foreground)]">{activeTab}</span>
             </div>
           </div>
@@ -613,8 +613,17 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
               <span>LIVE CORE</span>
             </div>
 
+            {/* Search Trigger for Mobile */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="flex lg:hidden p-2 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--foreground-muted)] hover:bg-[var(--secondary)] transition-colors cursor-pointer"
+              title="Search command center"
+            >
+              <Search className="h-3.5 w-3.5" />
+            </button>
+
             {/* Academic Year Dropdown */}
-            <div className="relative" ref={yearRef}>
+            <div className="relative hidden md:block" ref={yearRef}>
               <button
                 onClick={() => setIsYearOpen(!isYearOpen)}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--foreground-muted)] hover:bg-[var(--secondary)] transition-colors cursor-pointer"
@@ -647,7 +656,7 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
             </div>
 
             {/* Language Dropdown Selector (English / தமிழ் placeholder) */}
-            <div className="relative" ref={langRef}>
+            <div className="relative hidden md:block" ref={langRef}>
               <button
                 onClick={() => setIsLangOpen(!isLangOpen)}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--foreground-muted)] hover:bg-[var(--secondary)] transition-colors cursor-pointer"
@@ -776,19 +785,21 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
           </div>
         </header>
 
-        {/* Desktop Dynamic Preview Switcher (Vercel Style pill) */}
-        <div className="bg-[var(--secondary)] px-4 py-2 border-b border-[var(--border)] flex items-center gap-2.5 flex-shrink-0 text-[11.5px]">
-          <span className="font-bold text-[var(--foreground-muted)] text-[10px] uppercase tracking-wider">Role Preview Dashboard:</span>
-          <div className="flex gap-1.5 flex-wrap">
+        {/* Premium Dynamic Preview Switcher (Vercel-style scrollable strip on mobile, flex on desktop) */}
+        <div className="bg-[var(--secondary)] px-4 py-2 border-b border-[var(--border)] flex flex-col md:flex-row md:items-center gap-2 md:gap-2.5 flex-shrink-0 text-[11.5px]">
+          <span className="font-bold text-[var(--foreground-muted)] text-[9.5px] uppercase tracking-wider shrink-0 select-none">
+            Role Preview Dashboard:
+          </span>
+          <div className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-none -mx-4 px-4 md:mx-0 md:px-0 flex-nowrap py-0.5 w-full">
             {(['Principal', 'Admin', 'Teacher', 'Parent', 'Student'] as UserRole[]).map((r) => {
               const isActive = activeRole === r;
               return (
                 <button
                   key={r}
                   onClick={() => handleRoleSwitch(r)}
-                  className={`px-3 py-1 font-bold rounded-full transition-all border cursor-pointer ${isActive
-                      ? 'bg-[var(--surface)] text-[var(--foreground)] border-[var(--border-strong)] shadow-sm'
-                      : 'bg-transparent border-transparent text-[var(--foreground-muted)] hover:text-[var(--foreground)]'
+                  className={`px-3.5 py-1 text-[11px] font-bold rounded-full transition-all border cursor-pointer shrink-0 ${isActive
+                      ? 'bg-[var(--surface)] text-[var(--foreground)] border-[var(--border-strong)] shadow-sm font-extrabold'
+                      : 'bg-transparent border-transparent text-[var(--foreground-muted)] hover:text-[var(--foreground)] font-semibold'
                     }`}
                   style={isActive ? { color: ROLE_COLORS[r] } : {}}
                 >
@@ -810,8 +821,8 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
       {/* ── Mobile Sidebar Drawer ────────────────────────── */}
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden animate-fade-in">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={() => setIsMobileOpen(false)} />
-          <aside className="relative flex flex-col w-[260px] bg-[var(--surface)] border-r border-[var(--border)] h-full z-10 shadow-2xl">
+          <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
+          <aside className="relative flex flex-col w-[260px] bg-[var(--surface)]/95 backdrop-blur-md border-r border-[var(--border)] h-full z-10 shadow-2xl rounded-r-2xl overflow-hidden">
 
             {/* Mobile Header */}
             <div className="flex items-center justify-between px-4 h-[56px] border-b border-[var(--border)]">
@@ -848,6 +859,38 @@ export default function LayoutWrapper({ children, activeTab, setActiveTab }: Lay
                 </div>
               ))}
             </nav>
+
+            {/* Mobile selectors for AY & Lang */}
+            <div className="px-4 py-3 border-t border-[var(--border)] flex gap-2 bg-[var(--secondary)]">
+              <div className="flex-1">
+                <label className="text-[8px] font-bold uppercase tracking-wider text-[var(--foreground-subtle)] block mb-1">Academic Year</label>
+                <select
+                  value={currentYear}
+                  onChange={e => {
+                    setCurrentYear(e.target.value);
+                    toast({ title: 'Academic Year Selected', description: `Switched preview calendar context to ${e.target.value}.`, variant: 'info' });
+                  }}
+                  className="w-full text-[11px] font-bold border border-[var(--border)] rounded-md bg-[var(--surface)] p-1 text-[var(--foreground-muted)] outline-none"
+                >
+                  <option value="AY 2025–26">AY 2025–26</option>
+                  <option value="AY 2024–25">AY 2024–25</option>
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="text-[8px] font-bold uppercase tracking-wider text-[var(--foreground-subtle)] block mb-1">Language</label>
+                <select
+                  value={currentLang}
+                  onChange={e => {
+                    setCurrentLang(e.target.value);
+                    toast({ title: `Language set to ${e.target.value}`, description: 'Note: Translation updates are mock preview placeholders only.', variant: 'info' });
+                  }}
+                  className="w-full text-[11px] font-bold border border-[var(--border)] rounded-md bg-[var(--surface)] p-1 text-[var(--foreground-muted)] outline-none"
+                >
+                  <option value="English">English</option>
+                  <option value="தமிழ்">தமிழ்</option>
+                </select>
+              </div>
+            </div>
 
             {/* Mobile Footer */}
             <div className="border-t border-[var(--border)] px-4 py-3 flex items-center gap-2 bg-[var(--secondary)]">

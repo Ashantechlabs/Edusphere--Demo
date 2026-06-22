@@ -262,7 +262,7 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
           {/* Fee collection warning action */}
           {feeStatus === 'Pending' && (
             <div
-              className="premium-card p-3.5 flex items-center justify-between gap-4 cursor-pointer hover:bg-rose-50/10 border-rose-100 dark:border-rose-950/20 bg-[var(--surface)] transition-all"
+              className="premium-card p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 cursor-pointer hover:bg-rose-50/10 border-rose-100 dark:border-rose-950/20 bg-[var(--surface)] transition-all"
               style={{ borderLeft: '3px solid var(--danger)' }}
             >
               <div className="flex items-center gap-3">
@@ -325,7 +325,7 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
           {/* Active PTM meeting notifications */}
           {activePTM && (
             <div className="premium-card p-4 border border-[var(--border)] bg-[var(--surface)]">
-              <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="h-8.5 w-8.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
                     <Calendar className="h-4 w-4" />

@@ -313,7 +313,7 @@ export default function TeacherDashboard({ activeTab }: TeacherDashboardProps) {
                       <button
                         key={opt}
                         onClick={() => setAttRecords(p => ({ ...p, [s.id]: opt }))}
-                        className={`px-2 py-1 text-[10px] font-bold rounded-md border transition-all cursor-pointer ${
+                        className={`px-1.5 sm:px-2.5 py-1 text-[9.5px] sm:text-[10px] font-bold rounded-md border transition-all cursor-pointer ${
                           status === opt
                             ? opt === 'Present' ? 'bg-[var(--success)] text-white border-[var(--success)] shadow-sm'
                             : opt === 'Absent' ? 'bg-[var(--danger)] text-white border-[var(--danger)] shadow-sm'
