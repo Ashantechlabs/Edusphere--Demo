@@ -71,13 +71,32 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
   const activePTM = studentPTMs.find(p => p.status === 'Scheduled');
 
   // Charts
-  const subjectData = Object.entries(activeStudent.grades).map(([subject, score]) => ({ subject: subject.split(' ')[0], score, avg: 82 }));
+  const subjectData = Object.entries(activeStudent.grades).map(([subj, score]) => {
+    const pastScores = getPastScores(activeStudent.id, subj, score);
+    const pastAvg = Math.round(pastScores.reduce((a, b) => a + b, 0) / pastScores.length);
+    return {
+      subject: subj.split(' ')[0],
+      score,
+      avg: pastAvg
+    };
+  });
+  const activeGrades = Object.values(activeStudent.grades);
+  const overallAvg = activeGrades.length > 0 ? Math.round(activeGrades.reduce((a, b) => a + b, 0) / activeGrades.length) : 85;
+
+  const activeStudentSubjects = Object.keys(activeStudent.grades);
+  const pastUT1Scores = activeStudentSubjects.map(subj => getPastScores(activeStudent.id, subj, activeStudent.grades[subj])[0]);
+  const pastUT2Scores = activeStudentSubjects.map(subj => getPastScores(activeStudent.id, subj, activeStudent.grades[subj])[1]);
+  const pastQtrScores = activeStudentSubjects.map(subj => getPastScores(activeStudent.id, subj, activeStudent.grades[subj])[2]);
+
+  const ut1Avg = Math.round(pastUT1Scores.reduce((a, b) => a + b, 0) / pastUT1Scores.length);
+  const ut2Avg = Math.round(pastUT2Scores.reduce((a, b) => a + b, 0) / pastUT2Scores.length);
+  const qtrAvg = Math.round(pastQtrScores.reduce((a, b) => a + b, 0) / pastQtrScores.length);
+
   const progressData = [
-    { wk: 'W1', score: activeStudent.id === 'S3' ? 52 : activeStudent.id === 'S7' ? 68 : 88 },
-    { wk: 'W2', score: activeStudent.id === 'S3' ? 50 : activeStudent.id === 'S7' ? 71 : 90 },
-    { wk: 'W3', score: activeStudent.id === 'S3' ? 58 : activeStudent.id === 'S7' ? 70 : 94 },
-    { wk: 'W4', score: activeStudent.id === 'S3' ? 55 : activeStudent.id === 'S7' ? 69 : 92 },
-    { wk: 'W5', score: activeStudent.id === 'S3' ? 60 : activeStudent.id === 'S7' ? 74 : 95 },
+    { name: 'UT 1', score: ut1Avg },
+    { name: 'UT 2', score: ut2Avg },
+    { name: 'Quarterly', score: qtrAvg },
+    { name: 'Current', score: overallAvg },
   ];
 
   // Child switcher dropdown state
@@ -316,7 +335,7 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
             <div className="premium-card p-4.5 border border-[var(--border)] bg-[var(--surface)]">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[12.5px] font-bold text-[var(--foreground)] tracking-tight">Subject Progress</h3>
-                <span className="tag tag-indigo">Mid-Term Ledger</span>
+                <span className="tag tag-indigo">vs Last 3 Exams Avg</span>
               </div>
               <div style={{ height: 130 }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -325,10 +344,10 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
                     <XAxis dataKey="subject" tick={{ fontSize: 9, fill: 'var(--foreground-muted)' }} tickLine={false} axisLine={false} />
                     <YAxis domain={[50, 100]} tick={{ fontSize: 9, fill: 'var(--foreground-muted)' }} tickLine={false} axisLine={false} />
                     <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 11 }} />
-                    <Bar dataKey="score" radius={[3, 3, 0, 0]} name="Aarav's Score">
+                    <Bar dataKey="score" radius={[3, 3, 0, 0]} name={`${activeStudent.name.split(' ')[0]}'s Score`}>
                       {subjectData.map((e, i) => <Cell key={i} fill={e.score >= 85 ? 'var(--primary)' : e.score >= 70 ? 'var(--warning)' : 'var(--danger)'} fillOpacity={0.8} />)}
                     </Bar>
-                    <Bar dataKey="avg" radius={[3, 3, 0, 0]} fill="var(--border)" name="Class Average" />
+                    <Bar dataKey="avg" radius={[3, 3, 0, 0]} fill="var(--border)" name="Last 3 Exams Avg" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -336,16 +355,16 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
 
             <div className="premium-card p-4.5 border border-[var(--border)] bg-[var(--surface)]">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[12.5px] font-bold text-[var(--foreground)] tracking-tight">Weekly Score Progression</h3>
-                <span className="tag tag-green">Past 5 Weeks</span>
+                <h3 className="text-[12.5px] font-bold text-[var(--foreground)] tracking-tight">Exam Score Progression</h3>
+                <span className="tag tag-indigo">Last 3 Exams + Current</span>
               </div>
               <div style={{ height: 130 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={progressData} margin={{ top: 2, right: 2, left: -28, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                    <XAxis dataKey="wk" tick={{ fontSize: 9.5, fill: 'var(--foreground-muted)' }} tickLine={false} axisLine={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 9.5, fill: 'var(--foreground-muted)' }} tickLine={false} axisLine={false} />
                     <YAxis domain={[40, 100]} tick={{ fontSize: 9.5, fill: 'var(--foreground-muted)' }} tickLine={false} axisLine={false} />
-                    <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 11 }} />
+                    <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 11 }} formatter={(v) => [`${v as number | string}%`, 'Overall Score']} />
                     <Line type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={2} dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} activeDot={{ r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
@@ -457,18 +476,18 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
 
           {/* Subject progress list */}
           <div className="premium-card p-4.5 border border-[var(--border)] bg-[var(--surface)]">
-            <h3 className="text-[13px] font-bold text-[var(--foreground)] mb-3">Subject Benchmarks</h3>
+            <h3 className="text-[12.5px] font-bold text-[var(--foreground)] tracking-tight mb-3">Subject-wise Marks breakdown</h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[12px]">
+              <table className="w-full text-left border-collapse text-[12.5px]">
                 <thead>
                   <tr className="border-b border-[var(--border)] text-[9.5px] font-bold uppercase tracking-wider text-[var(--foreground-muted)] bg-[var(--secondary)]">
-                    <th className="py-2 px-2.5">Subject</th>
-                    <th className="py-2 px-2.5 text-center">Unit Test 1</th>
-                    <th className="py-2 px-2.5 text-center">Unit Test 2</th>
-                    <th className="py-2 px-2.5 text-center">Quarterly</th>
-                    <th className="py-2 px-2.5 text-center">Current</th>
-                    <th className="py-2 px-2.5 text-center">Grade</th>
-                    <th className="py-2 px-2.5 text-right">Trend</th>
+                    <th className="py-3 px-4">SUBJECT</th>
+                    <th className="py-3 px-4 text-center">UNIT TEST 1</th>
+                    <th className="py-3 px-4 text-center">UNIT TEST 2</th>
+                    <th className="py-3 px-4 text-center">QUARTERLY</th>
+                    <th className="py-3 px-4 text-center">CURRENT</th>
+                    <th className="py-3 px-4 text-center">GRADE</th>
+                    <th className="py-3 px-4 text-right">TREND</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-subtle)] font-medium">
@@ -479,19 +498,19 @@ export default function ParentDashboard({ activeTab }: ParentDashboardProps) {
                     const isAbove = diff >= 0;
                     return (
                       <tr key={subj} className="hover:bg-[var(--primary-subtle)] transition-colors">
-                        <td className="py-2.5 px-2.5 font-bold text-[var(--foreground)]">{subj}</td>
-                        <td className="py-2.5 px-2.5 text-center font-mono text-[var(--foreground-muted)]">{pastScores[0]}%</td>
-                        <td className="py-2.5 px-2.5 text-center font-mono text-[var(--foreground-muted)]">{pastScores[1]}%</td>
-                        <td className="py-2.5 px-2.5 text-center font-mono text-[var(--foreground-muted)]">{pastScores[2]}%</td>
-                        <td className="py-2.5 px-2.5 text-center font-mono font-extrabold text-[var(--foreground)] text-[13px] bg-[var(--primary-subtle)]/30">{score}%</td>
-                        <td className="py-2.5 px-2.5 text-center">
+                        <td className="py-3.5 px-4 font-bold text-[var(--foreground)] text-[13px]">{subj}</td>
+                        <td className="py-3.5 px-4 text-center text-[var(--foreground-muted)]">{pastScores[0]}%</td>
+                        <td className="py-3.5 px-4 text-center text-[var(--foreground-muted)]">{pastScores[1]}%</td>
+                        <td className="py-3.5 px-4 text-center text-[var(--foreground-muted)]">{pastScores[2]}%</td>
+                        <td className="py-3.5 px-4 text-center font-extrabold text-[var(--foreground)] text-[13.5px] bg-[var(--secondary)]/50">{score}%</td>
+                        <td className="py-3.5 px-4 text-center">
                           <span className={`tag w-8 text-center ${score >= 90 ? 'tag-green' : score >= 80 ? 'tag-indigo' : score >= 70 ? 'tag-amber' : 'tag-red'}`}>
                             {score >= 90 ? 'A+' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D'}
                           </span>
                         </td>
-                        <td className="py-2.5 px-2.5 text-right">
-                          <span className={`inline-flex items-center gap-0.5 text-[9.5px] font-bold px-1.5 py-0.5 rounded ${isAbove ? 'text-[#059669] bg-[#ecfdf5] dark:text-[#34d399] dark:bg-[#34d399]/10' : 'text-[#d97706] bg-[#fffbeb] dark:text-[#fbbf24] dark:bg-[#fbbf24]/10'}`}>
-                            {isAbove ? `↑ +${diff}%` : `↓ ${diff}%`}
+                        <td className="py-3.5 px-4 text-right">
+                          <span className={`inline-flex items-center gap-0.5 text-[9.5px] font-bold px-2 py-0.5 rounded ${isAbove ? 'text-[#059669] bg-[#ecfdf5] dark:text-[#34d399] dark:bg-[#34d399]/10' : 'text-[#d97706] bg-[#fffbeb] dark:text-[#fbbf24] dark:bg-[#fbbf24]/10'}`}>
+                            {isAbove ? `↑ +${diff}%` : `↓ ${Math.abs(diff)}%`}
                           </span>
                         </td>
                       </tr>
